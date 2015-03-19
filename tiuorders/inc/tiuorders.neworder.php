@@ -96,8 +96,18 @@ if ($a == 'add')
 		{
 			$orderid = $db->lastInsertId();
 			
+			if(!empty($rorder['order_email']) && $usr['id'] == 0)
+			{
+				$key = sha1($rorder['order_email'].'&'.$orderid);
+			}
+
 			$options['code'] = $orderid;
 			$options['desc'] = $item['prd_title'];
+			
+			if ($db->fieldExists($db_payments, "pay_redirect"))
+			{
+				$options['redirect'] = $cfg['mainurl'].'/'.cot_url('tiuorders', 'id='.$orderid.'&key='.$key, '', true);
+			}
 			
 			/* === Hook === */
 			foreach (cot_getextplugins('tiuorders.neworder.add.done') as $pl)
